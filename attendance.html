@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: #f8fafc;
+            --panel-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --accent-blue: #3b82f6;
+            --premium-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            --border-radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            padding: 15px;
+            padding-bottom: 90px;
+        }
+
+        /* --- Header --- */
+        .attendance-header {
+            margin-bottom: 20px;
+        }
+        .status-lock {
+            background: #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .attendance-header h1 { font-size: 1.5rem; font-weight: 800; }
+        .attendance-header p { font-size: 0.85rem; color: var(--text-sub); }
+
+        /* --- Top Controls --- */
+        .controls-row {
+            display: grid;
+            grid-template-columns: 1fr 100px;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .date-input, .subject-select {
+            background: var(--panel-bg);
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: var(--premium-shadow);
+        }
+        .date-input label { display: block; font-size: 0.65rem; color: var(--text-sub); font-weight: bold; }
+        .date-input div { font-weight: 700; font-size: 0.9rem; }
+
+        /* --- Mini Stats --- */
+        .mini-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .mini-card {
+            background: var(--panel-bg);
+            padding: 12px 5px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: var(--premium-shadow);
+            border-bottom: 3px solid #cbd5e1;
+        }
+        .mini-card h3 { font-size: 1.2rem; }
+        .mini-card p { font-size: 0.65rem; color: var(--text-sub); font-weight: bold; }
+        
+        .total h3 { color: var(--text-main); }
+        .present { border-color: #22c55e; } .present h3 { color: #15803d; }
+        .absent { border-color: #ef4444; } .absent h3 { color: #b91c1c; }
+        .late { border-color: #f59e0b; } .late h3 { color: #b45309; }
+
+        /* --- Search Bar --- */
+        .search-container {
+            background: var(--panel-bg);
+            padding: 12px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--premium-shadow);
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .search-container input { border: none; outline: none; width: 100%; font-size: 0.9rem; }
+
+        /* --- Student List --- */
+        .gender-divider {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-sub);
+            margin: 15px 0 10px 5px;
+        }
+
+        .student-card {
+            background: var(--panel-bg);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--premium-shadow);
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .student-info { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .student-name h4 { font-size: 0.95rem; font-weight: 700; text-transform: uppercase; }
+        .student-name p { font-size: 0.75rem; color: var(--text-sub); }
+        .gender-tag { font-size: 0.7rem; color: var(--accent-blue); background: #eff6ff; padding: 2px 8px; border-radius: 5px; height: fit-content; }
+        .fem-gen-tag {font-size: 0.7rem; color: var(--accent-pink); background: #ffe4ff; padding: 2px 8px; border-radius: 5px; height: fit-content; }
+        .attendance-options { display: flex; gap: 8px; flex-wrap: wrap; }
+        .opt-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-sub);
+            cursor: pointer;
+        }
+        .opt-btn.active { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
+        
+        .remarks {
+            margin-top: 10px;
+            font-size: 0.7rem;
+            font-style: italic;
+            color: #94a3b8;
+        }
+
+        /* --- Fixed Bottom Nav --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: white; display: flex; justify-content: space-around;
+            padding: 12px 0; border-top: 1px solid #e2e8f0; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        .nav-item { text-align: center; text-decoration: none; color: var(--text-sub); font-size: 0.7rem; }
+        .nav-item i { display: block; font-size: 1.2rem; margin-bottom: 3px; }
+        .nav-item.active { color: var(--accent-blue); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="attendance-header">
+        <div class="status-lock">
+            <i class="fa-solid fa-lock"></i> Attendance Record
+        </div>
+        <h1>Mark Attendance</h1>
+        <p>First Semester • APP 006: Practical Research 2</p>
+    </div>
+
+    <div class="controls-row">
+        <div class="date-input">
+            <label><i class="fa-regular fa-calendar"></i> Date</label>
+            <div>06/05/2026</div>
+        </div>
+        <div class="subject-select">
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--accent-blue);">APP 006 <i class="fa-solid fa-chevron-down"></i></div>
+        </div>
+    </div>
+
+    <div class="mini-stats-grid">
+        <div class="mini-card total"><h3>25</h3><p>Total</p></div>
+        <div class="mini-card present"><h3>0</h3><p>Present</p></div>
+        <div class="mini-card absent"><h3>0</h3><p>Absent</p></div>
+        <div class="mini-card late"><h3>0</h3><p>Late</p></div>
+    </div>
+
+    <div class="search-container">
+        <i class="fa-solid fa-magnifying-glass" style="color: var(--text-sub);"></i>
+        <input type="text" placeholder="Search student...">
+    </div>
+
+    <div class="gender-divider">👶 MALE</div>
+
+    <div class="student-card">
+        <div class="student-info">
+            <div class="student-name">
+                <h4><span style="color: var(--accent-blue); opacity: 0.5;">01</span> Arban Jr., Jay</h4>
+                <p>2023-10421</p>
+            </div>
+            <span class="gender-tag">Male</span>
+        </div>
+        <div class="attendance-options">
+            <button class="opt-btn">Present</button>
+            <button class="opt-btn">Absent</button>
+            <button class="opt-btn">Late</button>
+            <button class="opt-btn">Excuse</button>
+        </div>
+        <div class="remarks">optional remark...</div>
+    </div>
+
+    <div class="student-card">
+        <div class="student-info">
+            <div class="student-name">
+                <h4><span style="color: var(--accent-blue); opacity: 0.5;">02</span> Arenal, Lester</h4>
+                <p>2023-10422</p>
+            </div>
+            <span class="gender-tag">Male</span>
+        </div>
+        <div class="attendance-options">
+            <button class="opt-btn">Present</button>
+            <button class="opt-btn">Absent</button>
+            <button class="opt-btn">Late</button>
+            <button class="opt-btn">Excuse</button>
+        </div>
+        <div class="remarks">optional remark...</div>
+    </div>
+
+    <div class="gender-divider">💆‍♀️ FEMALE</div>
+
+    
+    <div class="student-card">
+        <div class="student-info">
+            <div class="student-name">
+                <h4><span style="color: var(--accent-blue); opacity: 0.5;">03</span> Wens, Day</h4>
+                <p>2023-10423</p>
+            </div>
+            <span class="fem-gen-tag">Female</span>
+        </div>
+        <div class="attendance-options">
+            <button class="opt-btn">Present</button>
+            <button class="opt-btn">Absent</button>
+            <button class="opt-btn">Late</button>
+            <button class="opt-btn">Excuse</button>
+        </div>
+        <div class="remarks">optional remark...</div>
+    </div>
+
+    <div class="student-card">
+        <div class="student-info">
+            <div class="student-name">
+                <h4><span style="color: var(--accent-blue); opacity: 0.5;">04</span> Banny, Arianne</h4>
+                <p>2023-10424</p>
+            </div>
+            <span class="fem-gen-tag">Female</span>
+        </div>
+        <div class="attendance-options">
+            <button class="opt-btn">Present</button>
+            <button class="opt-btn">Absent</button>
+            <button class="opt-btn">Late</button>
+            <button class="opt-btn">Excuse</button>
+        </div>
+        <div class="remarks">optional remark...</div>
+    </div>
+
+    <div class="student-card">
+        <div class="student-info">
+            <div class="student-name">
+                <h4><span style="color: var(--accent-blue); opacity: 0.5;">05</span> Billy, Jeans</h4>
+                <p>2023-10425</p>
+            </div>
+            <span class="fem-gen-tag">Female</span>
+        </div>
+        <div class="attendance-options">
+            <button class="opt-btn">Present</button>
+            <button class="opt-btn">Absent</button>
+            <button class="opt-btn">Late</button>
+            <button class="opt-btn">Excuse</button>
+        </div>
+        <div class="remarks">optional remark...</div>
+    </div>
+
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i>Home</a>
+        <a href="attendance.html" class="nav-item active"><i class="fa-solid fa-calendar-check"></i>Attendance</a>
+        <a href="record.html" class="nav-item"><i class="fa-solid fa-file-invoice"></i>Records</a>
+        <a href="profile.html" class="nav-item"><i class="fa-solid fa-circle-user"></i>Profile</a>
+    </nav>
+
+</body>
+</html>

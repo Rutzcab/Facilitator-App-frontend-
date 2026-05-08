@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Record</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: #f8fafc;
+            --panel-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --accent-blue: #3b82f6;
+            --premium-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            --border-radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            padding: 15px;
+            padding-bottom: 90px;
+        }
+
+        /* --- Header --- */
+        .header-section { margin-bottom: 20px; position: relative; }
+        .status-lock {
+            background: #e2e8f0; padding: 6px 12px; border-radius: 20px;
+            font-size: 0.75rem; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 10px;
+        }
+        .header-flex { display: flex; justify-content: space-between; align-items: center; }
+        .header-flex h1 { font-size: 1.5rem; font-weight: 800; }
+        .csv-download {
+            background: #f1f5f9; color: var(--accent-blue); padding: 8px 12px;
+            border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-decoration: none;
+        }
+
+        /* --- Info Card --- */
+        .info-card {
+            background: var(--panel-bg); padding: 15px; border-radius: var(--border-radius);
+            box-shadow: var(--premium-shadow); display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; margin-bottom: 20px; border-top: 4px solid var(--accent-blue);
+        }
+        .info-box p { font-size: 0.65rem; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
+        .info-box h3 { font-size: 0.95rem; font-weight: 700; margin-top: 2px; }
+        .section-tag {
+            background: #eff6ff; color: var(--accent-blue); padding: 4px 10px;
+            border-radius: 15px; font-size: 0.75rem; display: inline-block; margin-top: 5px;
+        }
+
+        /* --- Search --- */
+        .search-bar {
+            background: var(--panel-bg); padding: 12px; border-radius: 10px;
+            display: flex; align-items: center; gap: 10px; box-shadow: var(--premium-shadow);
+            margin-bottom: 15px; border: 1px solid #e2e8f0;
+        }
+        .search-bar input { border: none; outline: none; width: 100%; font-size: 0.9rem; }
+
+        .table-label { 
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.75rem; font-weight: 800; color: var(--text-sub); margin: 0 5px 10px;
+        }
+
+        /* --- DATA TABLE SYSTEM --- */
+        .table-scroll-container {
+            background: var(--panel-bg); border-radius: var(--border-radius);
+            box-shadow: var(--premium-shadow); overflow: hidden; border: 1px solid #e2e8f0;
+        }
+
+        .horizontal-scroll { overflow-x: auto; width: 100%; }
+
+        table { border-collapse: collapse; width: 100%; white-space: nowrap; }
+        
+        th { 
+            background: #f8fafc; color: var(--text-sub); font-size: 0.7rem; 
+            text-transform: uppercase; padding: 12px 15px; text-align: left;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .sticky-col { 
+            position: sticky; left: 0; background: #f8fafc; z-index: 10; 
+            border-right: 1px solid #e2e8f0; 
+        }
+        
+        td { padding: 12px 15px; font-size: 0.85rem; border-bottom: 1px solid #f1f5f9; }
+        
+        .td-sticky { position: sticky; left: 0; background: white; z-index: 5; border-right: 1px solid #f1f5f9; }
+
+        .gender-row { background: #c1c1c1; font-weight: 800; font-size: 0.7rem; color: var(--accent-blue); }
+
+        /* Score Colors */
+        .score { font-weight: 800; display: inline-block; width: 25px; text-align: center; }
+        .score.yellow { color: #eab308; }
+        .score.green { color: #22c55e; }
+        .score.red { color: #ef4444; }
+        .score.null { color: #cbd5e1; }
+
+        /* --- Fixed Bottom Nav --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: white; display: flex; justify-content: space-around;
+            padding: 12px 0; border-top: 1px solid #e2e8f0; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+        .nav-item { text-align: center; text-decoration: none; color: var(--text-sub); font-size: 0.7rem; }
+        .nav-item i { display: block; font-size: 1.2rem; margin-bottom: 3px; }
+        .nav-item.active { color: var(--accent-blue); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <div class="status-lock">
+            <i class="fa-solid fa-lock"></i> Class Record
+        </div>
+        <div class="header-flex">
+            <div>
+                <h1>Class Record</h1>
+                <p style="font-size: 0.8rem; color: var(--text-sub);">All scores — STEM12-1</p>
+            </div>
+            <a href="#" class="csv-download"><i class="fa-solid fa-download"></i> CSV</a>
+        </div>
+    </div>
+
+    <div class="info-card">
+        <div class="info-box">
+            <p>Semester</p>
+            <h3>First Semester</h3>
+        </div>
+        <div class="info-box">
+            <p>Subject</p>
+            <h3>APP 006</h3>
+        </div>
+        <div class="info-box">
+            <p>Total Students</p>
+            <h3>25</h3>
+        </div>
+        <div class="info-box">
+            <p>Section</p>
+            <span class="section-tag">STEM12-1</span>
+        </div>
+    </div>
+
+    <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass" style="color: var(--text-sub);"></i>
+        <input type="text" placeholder="Search student name...">
+    </div>
+
+    <div class="table-label">
+        <span>SCORE TABLE</span>
+        <span style="color: var(--accent-blue);"><i class="fa-solid fa-arrow-left-right"></i> scroll</span>
+    </div>
+
+    <div class="table-scroll-container">
+        <div class="horizontal-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sticky-col" style="width: 40px;">#</th>
+                        <th class="sticky-col">STUDENT NAME</th>
+                        <th colspan="5" style="text-align: center; background: #f1f5f9;">MODULES</th>
+                        <th colspan="3" style="text-align: center; background: #e0f2fe;">ACTIVITIES</th>
+                    </tr>
+                    <tr style="font-size: 0.6rem; text-align: center;">
+                        <th class="sticky-col"></th>
+                        <th class="sticky-col"></th>
+                        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+                        <th>1</th><th>2</th><th>3</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="gender-row">
+                        <td colspan="10"><i class="fa-solid fa-mars"></i> MALE</td>
+                    </tr>
+                    <tr>
+                        <td class="td-sticky">1</td>
+                        <td class="td-sticky"><strong>ARBAN JR., JAY</strong></td>
+                        <td><span class="score yellow">10</span></td>
+                        <td><span class="score green">15</span></td>
+                        <td><span class="score null">—</span></td>
+                        <td><span class="score yellow">10</span></td>
+                        <td><span class="score yellow">10</span></td>
+                        <td><span class="score red">8</span></td>
+                        <td><span class="score green">25</span></td>
+                        <td><span class="score null">—</span></td>
+                    </tr>
+                    <tr>
+                        <td class="td-sticky">2</td>
+                        <td class="td-sticky"><strong>ARENAL, LESTER</strong></td>
+                        <td><span class="score yellow">10</span></td>
+                        <td><span class="score green">15</span></td>
+                        <td><span class="score null">—</span></td>
+                        <td><span class="score yellow">10</span></td>
+                        <td><span class="score yellow">10</span></td>
+                        <td><span class="score red">5</span></td>
+                        <td><span class="score green">30</span></td>
+                        <td><span class="score null">—</span></td>
+                    </tr>
+                    <tr class="gender-row">
+                        <td colspan="10"><i class="fa-solid fa-venus"></i> FEMALE</td>
+                    </tr>
+                    <tr>
+                        <td class="td-sticky">1</td>
+                        <td class="td-sticky"><strong>CABRERA, RUTZ</strong></td>
+                        <td><span class="score yellow">10</span></td>
+                        <td><span class="score green">15</span></td>
+                        <td><span class="score null">—</span></td>
+                        <td><span class="score yellow">10</span></td>
+                        <td><span class="score yellow">10</span></td>
+                        <td><span class="score yellow">9</span></td>
+                        <td><span class="score green">28</span></td>
+                        <td><span class="score null">—</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i>Home</a>
+        <a href="attendance.html" class="nav-item"><i class="fa-solid fa-calendar-check"></i>Attendance</a>
+        <a href="record.html" class="nav-item active"><i class="fa-solid fa-chart-column"></i>Records</a>
+        <a href="profile.html" class="nav-item"><i class="fa-solid fa-circle-user"></i>Profile</a>
+    </nav>
+
+</body>
+</html>
